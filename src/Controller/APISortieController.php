@@ -29,7 +29,15 @@ class APISortieController extends AbstractController
     }
 
     /**
-     * @Route("/api/sortie/", name="apie_sortie_ajouter", methods={"POST"})
+     * @Route("/api/sortie/{id}", name="api_sortie_detail" , methods={"GET"})
+     */
+    public function detailSortie(SortieRepository $sortieRepo, $id): Response
+    {
+        return $this->json($sortieRepo->find($id),200, [],['groups'=>'sortie']);
+    }
+
+    /**
+     * @Route("/api/sortie/", name="api_sortie_ajouter", methods={"POST"})
      */
     public function ajouter(CampusRepository $campusRepo, EtatRepository $etatRepo, ParticipantRepository $participantRepo, LieuRepository $lieuRepo, Request $req,EntityManagerInterface $em): Response
     {
@@ -45,7 +53,6 @@ class APISortieController extends AbstractController
 
         // pour récupérer le body $req->getContent()
         $sortieRequest = json_decode($req->getContent());
-
 
         $sortie->setNbInscriptionsMax(
             $sortieRequest->nbInscriptionsMax
@@ -78,6 +85,53 @@ class APISortieController extends AbstractController
 
 
         $em->persist($sortie);
+        $em->flush();
+        return $this->json($sortie); // avec id
+    }
+
+    /**
+     * @Route("/api/sortie/{id}", name="api_sortie_modifier", methods={"PUT"})
+     */
+    public function modifier(Sortie $sortie, CampusRepository $campusRepo, EtatRepository $etatRepo, LieuRepository $lieuRepo, ParticipantRepository $participantRepo, Request $req,EntityManagerInterface $em): Response
+    {
+               
+        $campus = $campusRepo->findOneBy(["nom"=>"Niort"]);
+        $etat = $etatRepo->findOneBy(["libelle"=>"Créée"]);
+        $organisateur = $participantRepo->find(10);
+        $lieu = $lieuRepo->find(10);
+
+        // pour récupérer le body $req->getContent()
+        $sortieRequest = json_decode($req->getContent());
+
+        $sortie->setNbInscriptionsMax(
+            $sortieRequest->nbInscriptionsMax
+        );
+        $sortie->setNom(
+            $sortieRequest->nom
+        );
+        $sortie->setDateHeureDebut(
+            new \DateTime($sortieRequest->dateHeureDebut)
+        );
+        $sortie->setDateLimiteInscription(
+            new \DateTime($sortieRequest->dateLimiteInscription)
+        );
+        $sortie->setDuree(
+            $sortieRequest->duree
+        );
+        $sortie->setInfosSortie(
+            $sortieRequest->infosSortie
+        );
+
+
+        /*
+         * TODO : modifier ces données
+         */
+        $sortie->setLieu($lieu);
+        $sortie->setOrganisateur($organisateur);
+        $sortie->setCampus($campus);
+        $sortie->setEtat($etat);
+
+
         $em->flush();
         return $this->json($sortie); // avec id
     }
