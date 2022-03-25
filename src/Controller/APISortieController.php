@@ -4,16 +4,17 @@ namespace App\Controller;
 
 
 use App\Entity\Sortie;
-use App\Repository\CampusRepository;
 use App\Repository\EtatRepository;
 use App\Repository\LieuRepository;
-use App\Repository\ParticipantRepository;
+use App\Repository\CampusRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\ParticipantRepository;
+use DateTime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
 class APISortieController extends AbstractController
@@ -95,33 +96,21 @@ class APISortieController extends AbstractController
     public function modifier(Sortie $sortie, CampusRepository $campusRepo, EtatRepository $etatRepo, LieuRepository $lieuRepo, ParticipantRepository $participantRepo, Request $req,EntityManagerInterface $em): Response
     {
                
+        // Récupération du body de la request
+        $body = json_decode($req->getContent());
+       
+        // Prise en compte des mdoifications de la sortie dans l'objet $sortie
+        $sortie->setNom($body->nom)
+                ->setDateHeureDebut(new \DateTime($body->dateHeureDebut))
+                ->setDuree(($body->duree))
+                ->setDateLimiteInscription(new \DateTime($body->dateLimiteInscription))
+                ->setNbInscriptionsMax($body->nbInscriptionsMax)
+                ->setInfosSortie($body->infosSortie);
+
         $campus = $campusRepo->findOneBy(["nom"=>"Niort"]);
         $etat = $etatRepo->findOneBy(["libelle"=>"Créée"]);
         $organisateur = $participantRepo->find(10);
         $lieu = $lieuRepo->find(10);
-
-        // pour récupérer le body $req->getContent()
-        $sortieRequest = json_decode($req->getContent());
-
-        $sortie->setNbInscriptionsMax(
-            $sortieRequest->nbInscriptionsMax
-        );
-        $sortie->setNom(
-            $sortieRequest->nom
-        );
-        $sortie->setDateHeureDebut(
-            new \DateTime($sortieRequest->dateHeureDebut)
-        );
-        $sortie->setDateLimiteInscription(
-            new \DateTime($sortieRequest->dateLimiteInscription)
-        );
-        $sortie->setDuree(
-            $sortieRequest->duree
-        );
-        $sortie->setInfosSortie(
-            $sortieRequest->infosSortie
-        );
-
 
         /*
          * TODO : modifier ces données
@@ -131,8 +120,25 @@ class APISortieController extends AbstractController
         $sortie->setCampus($campus);
         $sortie->setEtat($etat);
 
-
+        // Enregistrement en base de donnée
         $em->flush();
-        return $this->json($sortie); // avec id
+
+        // Return la sortie with the id
+        return $this->json($sortie);
+    }
+
+
+    /**
+     * @Route("/api/sortie/{id}", name="api_sortie_supprimer" , methods={"DELETE"})
+     */
+    public function supprimerSortie(EntityManagerInterface $em, Sortie $sortie): Response
+    {
+        // Remove la sortie en bdd
+        $em->remove($sortie);
+        $em->flush();
+
+        // Retour utilisateur
+        $tab['info'] = 'La sortie est supprimée';
+        return $this->json($tab);
     }
 }
