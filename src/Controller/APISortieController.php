@@ -105,20 +105,9 @@ class APISortieController extends AbstractController
                 ->setDuree(($body->duree))
                 ->setDateLimiteInscription(new \DateTime($body->dateLimiteInscription))
                 ->setNbInscriptionsMax($body->nbInscriptionsMax)
-                ->setInfosSortie($body->infosSortie);
-
-        $campus = $campusRepo->findOneBy(["nom"=>"Niort"]);
-        $etat = $etatRepo->findOneBy(["libelle"=>"Créée"]);
-        $organisateur = $participantRepo->find(10);
-        $lieu = $lieuRepo->find(10);
-
-        /*
-         * TODO : modifier ces données
-         */
-        $sortie->setLieu($lieu);
-        $sortie->setOrganisateur($organisateur);
-        $sortie->setCampus($campus);
-        $sortie->setEtat($etat);
+                ->setInfosSortie($body->infosSortie)
+                ->setCampus($body->campus)
+                ->setLieu($body->lieu);
 
         // Enregistrement en base de donnée
         $em->flush();
