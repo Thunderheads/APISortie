@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Ville
 {
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -21,12 +22,14 @@ class Ville
     private $id;
 
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\Column(type="string", length=59)
      */
     private $nom;
 
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\Column(type="string", length=5)
      */

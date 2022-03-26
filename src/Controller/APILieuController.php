@@ -27,12 +27,12 @@ class APILieuController extends AbstractController
     /**
      * Fonction en charge de recupérer un lieu
      *
-     * @Route("api/lieu/", name="api_lieu", methods={"GET"})
+     * @Route("api/lieu/{id}", name="api_lieu", methods={"GET"})
      */
-    public function getLieu(Request $req, LieuRepository $lieuRepo): Response
+    public function getLieu(Lieu $lieu, Request $req, LieuRepository $lieuRepo): Response
     {
-        $lieuReq = json_decode($req->getContent());
-        $lieu = $lieuRepo->find($lieuReq->id);
+        //$lieuReq = json_decode($req->getContent());
+        //$lieu = $lieuRepo->find($lieuReq->id);
 
         //toujours mettre cette ligne quand envoie des données cas si erreurs de references circulaires
         return $this->json($lieu,200, [],['groups'=>'lieu']);

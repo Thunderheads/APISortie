@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 class Lieu
 {
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -23,24 +24,28 @@ class Lieu
     private $id;
 
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\Column(type="string", length=255)
      */
     private $nom;
 
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\Column(type="string", length=255)
      */
     private $rue;
 
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\Column(type="float", nullable=true)
      */
     private $latitude;
 
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\Column(type="float", nullable=true)
      */
@@ -55,6 +60,7 @@ class Lieu
     private $sorties;
 
     /**
+     * @Groups("lieu")
      * @Groups("lieu_get_all")
      * @ORM\ManyToOne(targetEntity=Ville::class, inversedBy="lieux")
      * @ORM\JoinColumn(nullable=false)

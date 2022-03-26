@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class APISortieController extends AbstractController
 {
     /**
-     * @Route("/api/sortie", name="api_sortie" , methods={"GET"})
+     * @Route("/api/sortie/", name="api_sortie" , methods={"GET"})
      */
     public function sorties(SortieRepository $sortieRepo): Response
     {
@@ -79,6 +79,6 @@ class APISortieController extends AbstractController
 
         $em->persist($sortie);
         $em->flush();
-        return $this->json($sortie); // avec id
+        return $this->json($sortie,200, [],['groups'=>'sortie']); // avec id
     }
 }
