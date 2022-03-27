@@ -93,9 +93,8 @@ class APISortieController extends AbstractController
     /**
      * @Route("/api/sortie/{id}", name="api_sortie_modifier", methods={"PUT"})
      */
-    public function modifier(Sortie $sortie, CampusRepository $campusRepo, EtatRepository $etatRepo, LieuRepository $lieuRepo, ParticipantRepository $participantRepo, Request $req,EntityManagerInterface $em): Response
+    public function modifier(CampusRepository $campusRepo, EtatRepository $etatRepo, LieuRepository $lieuRepo, ParticipantRepository $participantRepo, Sortie $sortie, Request $req,EntityManagerInterface $em): Response
     {
-               
         // Récupération du body de la request
         $body = json_decode($req->getContent());
        
@@ -105,9 +104,21 @@ class APISortieController extends AbstractController
                 ->setDuree(($body->duree))
                 ->setDateLimiteInscription(new \DateTime($body->dateLimiteInscription))
                 ->setNbInscriptionsMax($body->nbInscriptionsMax)
-                ->setInfosSortie($body->infosSortie)
-                ->setCampus($body->campus)
-                ->setLieu($body->lieu);
+                ->setInfosSortie($body->infosSortie);
+
+        /*
+         * TODO : modifier cette partie par la suite
+         */
+        $campus = $campusRepo->findOneBy(["nom"=>"Niort"]);
+        $etat = $etatRepo->findOneBy(["libelle"=>"Créée"]);
+        $organisateur = $participantRepo->find(2);
+        $lieu = $lieuRepo->find(2);
+        $sortie->setLieu($lieu);
+        $sortie->setOrganisateur($organisateur);
+        $sortie->setCampus($campus);
+        $sortie->setEtat($etat);
+
+
 
         // Enregistrement en base de donnée
         $em->flush();
