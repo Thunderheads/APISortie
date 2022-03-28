@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Campus
 {
     /**
+     * @Groups("user")
      * @Groups("sortie")
      * @Groups("campus_all")
      * @ORM\Id

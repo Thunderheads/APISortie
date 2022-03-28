@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 class Participant
 {
     /**
+     * @Groups("user")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,55 +23,56 @@ class Participant
     private $id;
 
     /**
-
+     * @Groups("user")
      * @ORM\Column(type="string", length=50)
      */
     private $nom;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="string", length=50)
      */
     private $prenom;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="string", length=50)
      */
     private $telephone;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="string", length=255)
      */
     private $mail;
 
     /**
+     *
      * @ORM\Column(type="string", length=255)
      */
     private $motPasse;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="boolean")
      */
     private $actif;
 
     /**
      * la liste des sorties auxquelles le particpant participe
-     *
      * @ORM\ManyToMany(targetEntity=Sortie::class, inversedBy="participants")
-     * @Ignore
      */
     private $sortie;
 
     /**
      * représente la liste des sorties organiser par un participant
-     *
      * @ORM\OneToMany(targetEntity=Sortie::class, mappedBy="organisateur")
-     * @Ignore
      */
     private $sorties;
 
     /**
+     * @Groups("user")
      * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="participants")
-     * @Ignore
      */
     private $campus;
 
