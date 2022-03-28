@@ -22,19 +22,15 @@ class APISortieController extends AbstractController
     /**
      * @Route("/api/sortie/", name="api_sortie" , methods={"GET"})
      */
-    public function sorties(SortieRepository $sortieRepo): Response
+    public function sorties(SortieRepository $sortieRepo, Request $req): Response
     {
-        //$this->json($ville,200, [],['groups'=>'ville']);
+        if($req->query->get('id') === null) {
+            return $this->json($sortieRepo->findAll(),200, [],['groups'=>'sortie']);
 
-        return $this->json($sortieRepo->findAll(),200, [],['groups'=>'sortie']);
-    }
-
-    /**
-     * @Route("/api/sortie/{id}", name="api_sortie_detail" , methods={"GET"})
-     */
-    public function detailSortie(SortieRepository $sortieRepo, $id): Response
-    {
-        return $this->json($sortieRepo->find($id),200, [],['groups'=>'sortie']);
+        } else {
+            $sortie = $sortieRepo->find($req->query->get('id'));
+            return $this->json($sortie,200, [],['groups'=>'sortie']);
+        }
     }
 
     /**
@@ -91,16 +87,16 @@ class APISortieController extends AbstractController
     }
 
     /**
-     * @Route("/api/sortie/{id}", name="api_sortie_modifier", methods={"PUT"})
+     * @Route("/api/sortie/", name="api_sortie_modifier", methods={"PUT"})
      */
-    public function modifier(SortieRepository $sortieRepo, $id, CampusRepository $campusRepo, EtatRepository $etatRepo, LieuRepository $lieuRepo, ParticipantRepository $participantRepo, Request $req,EntityManagerInterface $em): Response
-    {
-        // Récupération de la sortie sélectionnée
-        $selectedSortie = $sortieRepo->find($id);
-
+    public function modifier(SortieRepository $sortieRepo, CampusRepository $campusRepo, EtatRepository $etatRepo, LieuRepository $lieuRepo, ParticipantRepository $participantRepo, Request $req,EntityManagerInterface $em): Response
+    {        
         // Récupération du body de la request
         $body = json_decode($req->getContent());
-       
+
+        // Récupération de la sortie sélectionnée
+        $selectedSortie = $sortieRepo->find($body->id);
+        
         // Prise en compte des mdoifications issues du formulaire
         $selectedSortie->setNom($body->nom)
                 ->setDateHeureDebut(new \DateTime($body->dateHeureDebut))
@@ -113,15 +109,18 @@ class APISortieController extends AbstractController
         $em->flush();
 
         // Return la sortie with the id
-        return $this->json($selectedSortie);
+        return $this->json($selectedSortie,200, [],['groups'=>'sortie']);
     }
 
 
     /**
-     * @Route("/api/sortie/{id}", name="api_sortie_supprimer" , methods={"DELETE"})
+     * @Route("/api/sortie/", name="api_sortie_supprimer" , methods={"DELETE"})
      */
-    public function supprimerSortie(EntityManagerInterface $em, Sortie $sortie): Response
+    public function supprimerSortie(EntityManagerInterface $em, SortieRepository $sortieRepo, Request $req): Response
     {
+        // Récupération de la sortie à supprimer
+        $sortie = $sortieRepo->find($req->query->get('id'));
+
         // Remove la sortie en bdd
         $em->remove($sortie);
         $em->flush();
